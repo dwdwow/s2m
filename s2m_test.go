@@ -73,6 +73,9 @@ func TestToWithErr(t *testing.T) {
 		panic(err)
 	}
 	for k, v := range m {
-		fmt.Print(k, v)
+		if k == "c" {
+			panic("c is zero value and tag is omitempty, but is obtained in map")
+		}
+		fmt.Println(k, v)
 	}
 }

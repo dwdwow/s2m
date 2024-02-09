@@ -65,10 +65,12 @@ func doWithErr[V any](s any, isValStr bool) (m map[string]V, err error) {
 		}
 		tag, ok := field.Tag.Lookup(Tag)
 		if ok {
-			if strings.Contains(tag, "omitempty") && v.IsZero() {
+			// field tag name may be omitempty, so can not use strings.Contains(tag, "omitempty").
+			tags := strings.Split(tag, ",")
+			if len(tags) > 1 && strings.Contains(tags[1], "omitempty") {
 				continue
 			}
-			name = tag
+			name = strings.Trim(tags[0], " ")
 		}
 		if isValStr {
 			var str string
