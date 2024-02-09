@@ -26,6 +26,15 @@ func ToWithErr(s any) (m map[string]any, err error) {
 	return doWithErr[any](s, false)
 }
 
+func ToStrMap(s any) map[string]string {
+	m, _ := ToStrMapWithErr(s)
+	return m
+}
+
+func ToStrMapWithErr(s any) (map[string]string, error) {
+	return doWithErr[string](s, true)
+}
+
 func doWithErr[V any](s any, isValStr bool) (m map[string]V, err error) {
 	defer func() {
 		if rec := recover(); rec != nil {
