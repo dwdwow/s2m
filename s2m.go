@@ -10,31 +10,31 @@ import (
 
 const Tag = "s2m"
 
-// To Switch any value to map[string]any.
-// If s is not struct, will format s to string str, and return empty map.
-func To(s any) map[string]any {
-	m, _ := ToWithErr(s)
+// ToMapNoErr Switch any value toMap map[string]any.
+// If s is not struct, will format s toMap string str, and return empty map.
+func ToMapNoErr(s any) map[string]any {
+	m, _ := ToMap(s)
 	return m
 }
 
-// ToWithErr Switch struct to map[string]any.
+// ToMap Switch struct toMap map[string]any.
 // If s is not struct, will return error.
 // This switch is not deep.
 // If the struct contain other structs, the structs contained will not be witched.
-func ToWithErr(s any) (m map[string]any, err error) {
-	return doWithErr[any](s, false)
+func ToMap(s any) (m map[string]any, err error) {
+	return toMap[any](s, false)
 }
 
-func ToStrMap(s any) map[string]string {
-	m, _ := ToStrMapWithErr(s)
+func ToStrMapNoErr(s any) map[string]string {
+	m, _ := ToStrMap(s)
 	return m
 }
 
-func ToStrMapWithErr(s any) (map[string]string, error) {
-	return doWithErr[string](s, true)
+func ToStrMap(s any) (map[string]string, error) {
+	return toMap[string](s, true)
 }
 
-func doWithErr[V any](s any, isValStr bool) (m map[string]V, err error) {
+func toMap[V any](s any, isValStr bool) (m map[string]V, err error) {
 	defer func() {
 		if rec := recover(); rec != nil {
 			err = fmt.Errorf("s2m: %v", rec)
@@ -53,7 +53,7 @@ func doWithErr[V any](s any, isValStr bool) (m map[string]V, err error) {
 		return
 	}
 	if val.Kind() == reflect.Pointer || val.Kind() == reflect.UnsafePointer {
-		return doWithErr[V](val.Interface(), isValStr)
+		return toMap[V](val.Interface(), isValStr)
 	}
 	for i := 0; i < typ.NumField(); i++ {
 		field := typ.Field(i)

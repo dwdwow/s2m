@@ -69,7 +69,7 @@ func TestToWithErr(t *testing.T) {
 		PA: &a,
 		R:  testStruct0{111111, "rrrrrr"},
 	}
-	m, err := ToWithErr(ts)
+	m, err := ToMap(ts)
 	if err != nil {
 		panic(err)
 	}
@@ -89,7 +89,7 @@ func TestToStrMapWithErr(t *testing.T) {
 		PA: &a,
 		R:  testStruct0{111111, "rrrrrr"},
 	}
-	m, err := ToStrMapWithErr(ts)
+	m, err := ToStrMap(ts)
 	if err != nil {
 		panic(err)
 	}
