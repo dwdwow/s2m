@@ -54,7 +54,7 @@ func doWithErr[V any](s any, isValStr bool) (m map[string]V, err error) {
 	}
 	for i := 0; i < typ.NumField(); i++ {
 		field := typ.Field(i)
-		if field.Anonymous {
+		if !field.IsExported() {
 			continue
 		}
 		name := field.Name
