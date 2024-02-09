@@ -49,14 +49,6 @@ func doWithErr[V any](s any, isValStr bool) (m map[string]V, err error) {
 		err = fmt.Errorf("s2m: input kind %v is not a struct", kind)
 		return
 	}
-	if !val.IsValid() {
-		err = errors.New("s2m: input is invalid")
-		return
-	}
-	if val.IsNil() {
-		err = errors.New("s2m: input is nil")
-		return
-	}
 	if val.Kind() == reflect.Pointer || val.Kind() == reflect.UnsafePointer {
 		return doWithErr[V](val.Interface(), isValStr)
 	}
