@@ -1,9 +1,11 @@
 package s2m
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"reflect"
+	"strconv"
 	"strings"
 )
 
@@ -26,59 +28,71 @@ func DoWithErr(s any) (m map[string]any, err error) {
 			err = fmt.Errorf("s2m: %v", rec)
 		}
 	}()
-
 	m = map[string]any{}
-
 	typ := reflect.TypeOf(s)
 	val := reflect.ValueOf(s)
-
 	kind := val.Kind()
-
 	if kind != reflect.Struct {
 		err = fmt.Errorf("s2m: input kind %v is not a struct", kind)
 		return
 	}
-
 	if !val.IsValid() {
 		err = errors.New("s2m: input is invalid")
 		return
 	}
-
 	if val.IsNil() {
 		err = errors.New("s2m: input is nil")
 		return
 	}
-
 	if val.Kind() == reflect.Pointer || val.Kind() == reflect.UnsafePointer {
 		return DoWithErr(val.Interface())
 	}
-
 	for i := 0; i < typ.NumField(); i++ {
 		field := typ.Field(i)
-
 		if field.Anonymous {
 			continue
 		}
-
 		name := field.Name
-
 		v := val.FieldByName(name)
-
 		if !v.IsValid() {
 			continue
 		}
-
 		tag, ok := field.Tag.Lookup(Tag)
-
 		if ok {
 			if strings.Contains(tag, "omitempty") && v.IsZero() {
 				continue
 			}
 			name = tag
 		}
-
 		m[name] = v.Interface()
 	}
-
 	return
+}
+
+func formatAtom(v reflect.Value) (string, error) {
+	switch v.Kind() {
+	case reflect.Int64, reflect.Int, reflect.Int8, reflect.Int16,
+		reflect.Int32:
+		return strconv.FormatInt(v.Int(), 10), nil
+	case reflect.Uint64, reflect.Uint, reflect.Uint8, reflect.Uint16,
+		reflect.Uint32, reflect.Uintptr:
+		return strconv.FormatUint(v.Uint(), 10), nil
+	case reflect.Float64, reflect.Float32:
+		return strconv.FormatFloat(v.Float(), 'f', -1, 64), nil
+	case reflect.Bool:
+		return strconv.FormatBool(v.Bool()), nil
+	case reflect.String:
+		return strconv.Quote(v.String()), nil
+	case reflect.Slice, reflect.Map, reflect.Struct, reflect.Array:
+		data, err := json.Marshal(v.Interface())
+		return string(data), err
+	case reflect.Chan, reflect.Func:
+		return v.Type().String() + " 0x" + strconv.FormatUint(uint64(v.Pointer()), 16), nil
+	case reflect.Ptr:
+		return formatAtom(v.Elem())
+	case reflect.Invalid:
+		return "invalid", nil
+	default: // reflect.Interface
+		return v.Type().String() + " value", errors.New("s2m: interface")
+	}
 }
