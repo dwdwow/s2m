@@ -44,6 +44,10 @@ func doWithErr[V any](s any, isValStr bool) (m map[string]V, err error) {
 	typ := reflect.TypeOf(s)
 	val := reflect.ValueOf(s)
 	kind := val.Kind()
+	// s may be nil, invalid value
+	if !val.IsValid() {
+		return m, nil
+	}
 	if kind != reflect.Struct {
 		err = fmt.Errorf("s2m: input kind %v is not a struct", kind)
 		return
