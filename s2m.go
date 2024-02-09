@@ -86,7 +86,7 @@ func doWithErr[V any](s any, isValStr bool) (m map[string]V, err error) {
 			}
 			m[name] = (any)(str).(V)
 		} else {
-			m[name] = v.Interface()
+			m[name] = v.Interface().(V)
 		}
 	}
 	return
