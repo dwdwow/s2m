@@ -84,7 +84,7 @@ func doWithErr[V any](s any, isValStr bool) (m map[string]V, err error) {
 			if err != nil {
 				return
 			}
-			m[name] = any2v[V](str)
+			m[name] = (any)(str).(V)
 		} else {
 			m[name] = v.Interface()
 		}
@@ -118,9 +118,4 @@ func formatAtom(v reflect.Value) (string, error) {
 	default: // reflect.Interface
 		return v.Type().String() + " value", errors.New("s2m: interface")
 	}
-}
-
-// unsafe
-func any2v[V any](v any) V {
-	return v.(V)
 }
