@@ -7,12 +7,14 @@ import (
 	"strings"
 )
 
-const CanNotSwitch = "s2m_CanNotSwtich"
-
 const Tag = "s2m"
 
-// DoWithErr Switch any value to map[string]any.
-// If s is not struct or map, will format s to string str, and return map["CanNotSwitch"]str.
+// Do Switch any value to map[string]any.
+// If s is not struct, will format s to string str, and return empty map.
+func Do(s any) map[string]any {
+	m, _ := DoWithErr(s)
+	return m
+}
 
 // DoWithErr Switch struct to map[string]any.
 // If s is not struct, will return error.
