@@ -2,7 +2,6 @@ package s2m
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"reflect"
 	"strconv"
@@ -112,6 +111,6 @@ func formatAtom(v reflect.Value) (string, error) {
 	case reflect.Invalid:
 		return "invalid", nil
 	default: // reflect.Interface
-		return v.Type().String() + " value", errors.New("s2m: interface")
+		return v.Type().String() + " value", nil
 	}
 }

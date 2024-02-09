@@ -45,7 +45,7 @@ type testStruct struct {
 	PI *uint32         `s2m:"pi"`
 	PJ *uint16         `s2m:"pj"`
 	PK *uint8          `s2m:"pk"`
-	PL *uint           `s2m:"pl"`
+	PL *uint           `s2m:"pl,omitempty"`
 	PM *uintptr        `s2m:"pm"`
 	PN *float64        `s2m:"pn"`
 	PO *float32        `s2m:"po"`
@@ -67,13 +67,35 @@ func TestToWithErr(t *testing.T) {
 	ts := testStruct{
 		A:  a,
 		PA: &a,
+		R:  testStruct0{111111, "rrrrrr"},
 	}
 	m, err := ToWithErr(ts)
 	if err != nil {
 		panic(err)
 	}
 	for k, v := range m {
-		if k == "c" {
+		switch k {
+		case "c", "pl":
+			panic("c is zero value and tag is omitempty, but is obtained in map")
+		}
+		fmt.Println(k, v)
+	}
+}
+
+func TestToStrMapWithErr(t *testing.T) {
+	a := "aaaaa"
+	ts := testStruct{
+		A:  a,
+		PA: &a,
+		R:  testStruct0{111111, "rrrrrr"},
+	}
+	m, err := ToStrMapWithErr(ts)
+	if err != nil {
+		panic(err)
+	}
+	for k, v := range m {
+		switch k {
+		case "c", "pl":
 			panic("c is zero value and tag is omitempty, but is obtained in map")
 		}
 		fmt.Println(k, v)
