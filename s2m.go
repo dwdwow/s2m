@@ -60,6 +60,7 @@ func doWithErr[V any](s any, isValStr bool) (m map[string]V, err error) {
 		v := val.FieldByName(name)
 		if !v.IsValid() {
 			err = fmt.Errorf("s2m: field %v is invalid", name)
+			m = map[string]V{}
 			return
 		}
 		tag, ok := field.Tag.Lookup(Tag)
