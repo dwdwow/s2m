@@ -105,7 +105,7 @@ func formatAtom(v reflect.Value) (string, error) {
 	case reflect.Bool:
 		return strconv.FormatBool(v.Bool()), nil
 	case reflect.String:
-		return strconv.Quote(v.String()), nil
+		return v.String(), nil
 	case reflect.Slice, reflect.Map, reflect.Struct, reflect.Array:
 		data, err := json.Marshal(v.Interface())
 		return string(data), err
